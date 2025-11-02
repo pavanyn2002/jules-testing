@@ -1,0 +1,12 @@
+{
+  "intro-quiz": [
+    {
+      "q": "What is a quant model?",
+      "options": [
+        "Math-based",
+        "Intuition-based"
+      ],
+      "answer": 0
+    }
+  ]
+}

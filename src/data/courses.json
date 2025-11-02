@@ -1,0 +1,13 @@
+[
+  {
+    "id": "intro-to-quant",
+    "title": "Introduction to Quantitative Finance",
+    "description": "Understand what quant finance is and its applications.",
+    "sections": [
+      "What is Quant Finance?",
+      "Quantitative Models Overview",
+      "Why Quant Skills Matter"
+    ],
+    "quiz": "intro-quiz"
+  }
+]
