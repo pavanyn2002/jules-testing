@@ -12,22 +12,43 @@ const CodeBlock: React.FC = () => {
   const [code, setCode] = useState<string>('print("Hello, Quant World!")');
   const [output, setOutput] = useState<string>('');
   const [pyodide, setPyodide] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadPyodide = async () => {
-      const pyodideInstance = await window.loadPyodide();
-      window.pyodide = pyodideInstance;
-      setPyodide(pyodideInstance);
+      try {
+        const pyodideInstance = await window.loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/"
+        });
+        window.pyodide = pyodideInstance;
+        setPyodide(pyodideInstance);
+      } catch (error) {
+        console.error("Failed to load Pyodide:", error);
+        setOutput("Failed to load the interactive environment.");
+      } finally {
+        setIsLoading(false);
+      }
     };
     if (window.loadPyodide) {
       loadPyodide();
+    } else {
+        setOutput("Pyodide script not found. Please check your internet connection or browser settings.");
+        setIsLoading(false);
     }
   }, []);
 
   const runCode = async () => {
     if (pyodide) {
       try {
-        const result = await pyodide.runPythonAsync(code);
+        // Redirect stdout to capture print statements
+        pyodide.globals.set("stdout_callback", (s: string) => setOutput(prev => prev + s + '\\n'));
+        const result = await pyodide.runPythonAsync(`
+          import sys
+          import io
+          sys.stdout = io.StringIO()
+          ${code}
+          sys.stdout.getvalue()
+        `);
         setOutput(result || '');
       } catch (error) {
         setOutput(String(error));
@@ -36,22 +57,23 @@ const CodeBlock: React.FC = () => {
   };
 
   return (
-    <div className="my-4">
-      <h3 className="text-xl font-semibold mb-2">Interactive Code Block</h3>
+    <div className="my-8 p-6 border border-noir-border rounded-lg">
+      <h3 className="text-3xl font-semibold text-noir-accent mb-4">Interactive Code Block</h3>
       <textarea
-        className="w-full h-40 p-2 border rounded"
+        className="w-full h-48 p-4 border border-noir-border rounded bg-gray-900 text-noir-text font-mono text-sm focus:ring-2 focus:ring-noir-accent focus:outline-none"
         value={code}
         onChange={(e) => setCode(e.target.value)}
+        placeholder="Enter your Python code here..."
       />
       <button
-        className="bg-green-500 text-white px-4 py-2 rounded mt-2"
+        className="bg-noir-accent text-noir-bg font-bold py-2 px-6 rounded-full transition-all duration-300 hover:bg-opacity-80 disabled:bg-gray-500 disabled:cursor-not-allowed mt-4"
         onClick={runCode}
-        disabled={!pyodide}
+        disabled={isLoading || !pyodide}
       >
-        {pyodide ? 'Run Code' : 'Loading Pyodide...'}
+        {isLoading ? 'Loading Environment...' : 'Run Code'}
       </button>
-      <pre className="bg-gray-100 p-2 mt-2 rounded">
-        <code>{output}</code>
+      <pre className="bg-gray-900 text-noir-text p-4 mt-4 rounded border border-noir-border whitespace-pre-wrap">
+        <code>{output || '// Output will be displayed here'}</code>
       </pre>
     </div>
   );

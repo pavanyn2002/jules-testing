@@ -88,12 +88,12 @@ const Lesson: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-2">{course.title}</h1>
-      <p className="mb-6 text-gray-600">{course.description}</p>
+      <h1 className="text-4xl font-thin text-noir-accent mb-2">{course.title}</h1>
+      <p className="mb-8 text-gray-400">{course.description}</p>
 
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Lesson Sections</h2>
-        <ul className="list-disc pl-5 space-y-2">
+      <div className="mb-8 p-6 border border-noir-border rounded-lg">
+        <h2 className="text-3xl font-semibold text-noir-accent mb-4">Lesson Sections</h2>
+        <ul className="list-disc pl-5 space-y-2 text-noir-text">
           {course.sections.map((section, index) => (
             <li key={index}>{section}</li>
           ))}
@@ -103,17 +103,17 @@ const Lesson: React.FC = () => {
       <CodeBlock />
 
       {quiz && (
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Quiz</h2>
+        <div className="mt-8 p-6 border border-noir-border rounded-lg">
+          <h2 className="text-3xl font-semibold text-noir-accent mb-4">Quiz</h2>
           {isCompleted ? (
-            <p className="text-green-500 font-bold">You have already completed this lesson!</p>
+            <p className="text-noir-accent font-bold">You have already completed this lesson!</p>
           ) : (
             <form onSubmit={handleSubmit}>
               {quiz.map((q, index) => (
-                <div key={index} className="mb-4">
-                  <p className="font-semibold">{q.q}</p>
+                <div key={index} className="mb-6">
+                  <p className="font-semibold text-noir-text mb-2">{q.q}</p>
                   {q.options.map((option, i) => (
-                    <div key={i}>
+                    <div key={i} className="flex items-center mb-2">
                       <input
                         type="radio"
                         name={`question-${index}`}
@@ -121,13 +121,19 @@ const Lesson: React.FC = () => {
                         value={i}
                         onChange={() => handleAnswerChange(index, i)}
                         required
+                        className="form-radio h-4 w-4 text-noir-accent bg-noir-bg border-noir-border focus:ring-noir-accent"
                       />
-                      <label htmlFor={`q${index}-option${i}`} className="ml-2">{option}</label>
+                      <label htmlFor={`q${index}-option${i}`} className="ml-3 text-noir-text">{option}</label>
                     </div>
                   ))}
                 </div>
               ))}
-              <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit Quiz</button>
+              <button
+                type="submit"
+                className="bg-noir-accent text-noir-bg font-bold py-2 px-6 rounded-full transition-all duration-300 hover:bg-opacity-80"
+              >
+                Submit Quiz
+              </button>
             </form>
           )}
         </div>
